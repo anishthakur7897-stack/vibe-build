@@ -1,0 +1,14 @@
+<h1>Your Cart</h1>
+
+{% if products %}
+
+    {% for p in products %}
+        <div>
+            <h3>{{ p['product_name'] }}</h3>
+            <p>₹{{ p['price'] }}</p>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <p>Your cart is empty</p>
+{% endif %}

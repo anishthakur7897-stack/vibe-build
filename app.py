@@ -2,18 +2,12 @@ from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
 import os
 
-from werkzeug.security import (
-    generate_password_hash,
-    check_password_hash
-)
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-
 
 app = Flask(__name__)
 app.secret_key = "handloom_secret_key"
 
-# Upload folder
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -24,7 +18,6 @@ def init_db():
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    # USERS TABLE
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +28,6 @@ def init_db():
         )
     """)
 
-    # PRODUCTS TABLE
     c.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,7 +44,7 @@ def init_db():
     conn.close()
 
 
-# ---------------- HOME PAGE ---------------- #
+# ---------------- HOME ---------------- #
 
 @app.route("/")
 def home():
@@ -78,33 +70,18 @@ def register():
             c = conn.cursor()
 
             c.execute("""
-                INSERT INTO users
-                (name, email, password, role)
+                INSERT INTO users (name, email, password, role)
                 VALUES (?, ?, ?, ?)
-            """, (
-                name,
-                email,
-                hashed_password,
-                role
-            ))
+            """, (name, email, hashed_password, role))
 
             conn.commit()
             conn.close()
 
-            flash(
-                "Registration Successful!",
-                "success"
-            )
-
+            flash("Registration Successful!", "success")
             return redirect("/login")
 
         except sqlite3.IntegrityError:
-
-            flash(
-                "Email already exists!",
-                "danger"
-            )
-
+            flash("Email already exists!", "danger")
             return redirect("/register")
 
     return render_template("register.html")
@@ -123,38 +100,24 @@ def login():
         conn = sqlite3.connect("database.db")
         c = conn.cursor()
 
-        c.execute(
-            "SELECT * FROM users WHERE email=?",
-            (email,)
-        )
-
+        c.execute("SELECT * FROM users WHERE email=?", (email,))
         user = c.fetchone()
         conn.close()
 
-        if user and check_password_hash(
-            user[3],
-            password
-        ):
+        if user and check_password_hash(user[3], password):
 
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["role"] = user[4]
 
-            # Role Redirect
             if user[4] == "admin":
                 return redirect("/admin")
-
             elif user[4] == "seller":
                 return redirect("/seller")
-
-            elif user[4] == "buyer":
+            else:
                 return redirect("/buyer")
 
-        else:
-            flash(
-                "Invalid Email or Password",
-                "danger"
-            )
+        flash("Invalid Email or Password", "danger")
 
     return render_template("login.html")
 
@@ -164,16 +127,14 @@ def login():
 @app.route("/admin")
 def admin_dashboard():
 
-    if (
-        "role" not in session
-        or session["role"] != "admin"
-    ):
+    if "user_id" not in session:
         return redirect("/login")
 
-    return render_template(
-        "admin_dashboard.html",
-        username=session["username"]
-    )
+    if session.get("role") != "admin":
+        flash("Access denied", "danger")
+        return redirect("/login")
+
+    return render_template("admin_dashboard.html", username=session.get("username"))
 
 
 # ---------------- SELLER ---------------- #
@@ -181,16 +142,10 @@ def admin_dashboard():
 @app.route("/seller")
 def seller_dashboard():
 
-    if (
-        "role" not in session
-        or session["role"] != "seller"
-    ):
+    if session.get("role") != "seller":
         return redirect("/login")
 
-    return render_template(
-        "seller_dashboard.html",
-        username=session["username"]
-    )
+    return render_template("seller_dashboard.html", username=session["username"])
 
 
 # ---------------- BUYER ---------------- #
@@ -198,162 +153,150 @@ def seller_dashboard():
 @app.route("/buyer")
 def buyer_dashboard():
 
-    if (
-        "role" not in session
-        or session["role"] != "buyer"
-    ):
+    if session.get("role") != "buyer":
         return redirect("/login")
 
-    return render_template(
-        "buyer_dashboard.html",
-        username=session["username"]
-    )
+    return render_template("buyer_dashboard.html", username=session["username"])
 
 
-# ---------------- PRODUCT UPLOAD ---------------- #
+# ---------------- UPLOAD PRODUCT ---------------- #
 
-@app.route(
-    "/upload-product",
-    methods=["GET", "POST"]
-)
+@app.route("/upload-product", methods=["GET", "POST"])
 def upload_product():
 
-    if (
-        "role" not in session
-        or session["role"] != "seller"
-    ):
+    if session.get("role") != "seller":
         return redirect("/login")
 
     if request.method == "POST":
 
-        product_name = request.form[
-            "product_name"
-        ]
-
-        description = request.form[
-            "description"
-        ]
-
+        product_name = request.form["product_name"]
+        description = request.form["description"]
         price = request.form["price"]
-
-        category = request.form[
-            "category"
-        ]
+        category = request.form["category"]
 
         image = request.files["image"]
+        filename = secure_filename(image.filename)
 
-        filename = secure_filename(
-            image.filename
-        )
+        image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        image_path = os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            filename
-        )
-
-        image.save(image_path)
-
-        conn = sqlite3.connect(
-            "database.db"
-        )
-
+        conn = sqlite3.connect("database.db")
         c = conn.cursor()
 
         c.execute("""
             INSERT INTO products
-            (
-                seller_name,
-                product_name,
-                description,
-                price,
-                category,
-                image
-            )
+            (seller_name, product_name, description, price, category, image)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            session["username"],
-            product_name,
-            description,
-            price,
-            category,
-            filename
-        ))
+        """, (session["username"], product_name, description, price, category, filename))
 
         conn.commit()
         conn.close()
 
-        flash(
-            "Product Uploaded Successfully!",
-            "success"
-        )
-
+        flash("Product Uploaded!", "success")
         return redirect("/seller")
 
-    return render_template(
-        "upload_product.html"
-    )
+    return render_template("upload_product.html")
+
+
+# ---------------- PRODUCTS ---------------- #
+
 @app.route("/products")
 def products():
 
+    search = request.args.get("search")
+
     conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
 
-    cursor.execute(
-        "SELECT * FROM products"
-    )
+    if search:
+        c.execute("""
+            SELECT * FROM products
+            WHERE product_name LIKE ? OR category LIKE ?
+        """, ('%' + search + '%', '%' + search + '%'))
+    else:
+        c.execute("SELECT * FROM products")
 
-    products = cursor.fetchall()
-
+    products = c.fetchall()
     conn.close()
 
-    return render_template(
-        "products.html",
-        products=products
-    )
+    return render_template("products.html", products=products, search=search)
+
+
+# ---------------- CART ---------------- #
+
+@app.route("/add-to-cart/<int:product_id>")
+def add_to_cart(product_id):
+
+    if "cart" not in session:
+        session["cart"] = []
+
+    session["cart"].append(product_id)
+    session.modified = True
+
+    flash("Added to cart!", "success")
+    return redirect("/products")
+
+
+@app.route("/cart")
+def cart():
+
+    cart_items = []
+
+    if "cart" in session and session["cart"]:
+
+        conn = sqlite3.connect("database.db")
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        placeholders = ",".join("?" * len(session["cart"]))
+
+        c.execute(f"""
+            SELECT * FROM products
+            WHERE id IN ({placeholders})
+        """, session["cart"])
+
+        cart_items = c.fetchall()
+        conn.close()
+
+    return render_template("cart.html", products=cart_items)
+
+
+# ---------------- MY PRODUCTS ---------------- #
 
 @app.route("/my-products")
 def my_products():
 
-    if "role" not in session or session["role"] != "seller":
+    if session.get("role") != "seller":
         return redirect("/login")
 
     conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    c.execute(
-        "SELECT * FROM products WHERE seller_name=?",
-        (session["username"],)
-    )
-
+    c.execute("SELECT * FROM products WHERE seller_name=?", (session["username"],))
     items = c.fetchall()
 
     conn.close()
 
     return render_template("my_products.html", products=items)
 
+
 # ---------------- LOGOUT ---------------- #
 
 @app.route("/logout")
 def logout():
-
     session.clear()
-
-    flash(
-        "Logged out successfully!",
-        "info"
-    )
-
+    flash("Logged out!", "info")
     return redirect("/")
+
 
 @app.route("/test")
 def test():
     return "Flask is working!"
 
 
-# ---------------- RUN APP ---------------- #
+# ---------------- RUN ---------------- #
 
 if __name__ == "__main__":
-
     init_db()
-
     app.run(debug=True)

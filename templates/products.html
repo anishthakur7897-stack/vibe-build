@@ -28,8 +28,7 @@
 
 </header>
 
-
-<!-- PAGE HEADER -->
+<!-- PAGE CONTENT -->
 <section class="products-page">
 
     <div class="page-title">
@@ -42,6 +41,17 @@
 
     </div>
 
+    <!-- SEARCH BAR -->
+    <form method="GET" action="/products" class="search-bar">
+
+        <input type="text"
+               name="search"
+               placeholder="Search products..."
+               value="{{ search if search else '' }}">
+
+        <button type="submit">Search</button>
+
+    </form>
 
     <!-- PRODUCTS GRID -->
     <div class="product-grid">
@@ -52,40 +62,50 @@
 
             <div class="product-card">
 
-                <!-- PRODUCT IMAGE -->
+                <!-- IMAGE -->
                 <div class="product-image">
 
-                    <img src="{{ url_for('static', filename='uploads/' + product[6]) }}"
+                    <img src="{{ url_for('static', filename='uploads/' + product['image']) }}"
                     alt="Product Image">
 
                     <span class="badge">
-                        {{ product[5] }}
+                        {{ product['category'] }}
                     </span>
 
                 </div>
 
-
-                <!-- PRODUCT INFO -->
+                <!-- CONTENT -->
                 <div class="product-content">
 
                     <h2 class="product-title">
-                        {{ product[2] }}
+                        {{ product['product_name'] }}
                     </h2>
 
                     <p class="product-desc">
-                        {{ product[3] }}
+                        {{ product['description'] }}
                     </p>
-
 
                     <div class="price-row">
 
                         <h3 class="price">
-                            ₹{{ product[4] }}
+                            ₹{{ product['price'] }}
                         </h3>
 
-                        <button class="buy-btn">
-                            Buy Now
-                        </button>
+                        <div style="display:flex; gap:10px;">
+
+                            <!-- ADD TO CART -->
+                            <a href="/add-to-cart/{{ product['id'] }}">
+                                <button class="buy-btn">
+                                    Add to Cart
+                                </button>
+                            </a>
+
+                            <!-- BUY NOW (optional) -->
+                            <button class="buy-btn">
+                                Buy Now
+                            </button>
+
+                        </div>
 
                     </div>
 
