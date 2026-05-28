@@ -1,0 +1,112 @@
+```html id="2fw4kn"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0">
+
+    <title>
+        Register | NE Craftsroots
+    </title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static',
+    filename='style.css') }}">
+</head>
+
+<body class="auth-page">
+
+<div class="auth-container">
+
+    <!-- LEFT SIDE -->
+
+    <div class="auth-left">
+
+        <div class="auth-content">
+
+            <h1>
+                Join NE Craftsroots
+            </h1>
+
+            <p>
+                Become a buyer or seller
+                and support Northeast
+                India’s tribal artisans.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="auth-right">
+
+        <div class="auth-box">
+
+            <h2>Create Account</h2>
+
+            <form method="POST">
+
+                <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                required>
+
+                <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                required>
+
+                <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required>
+
+                <select
+                name="role"
+                required>
+
+                    <option value="">
+                        Select Role
+                    </option>
+
+                    <option value="buyer">
+                        Buyer
+                    </option>
+
+                    <option value="seller">
+                        Seller
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    Register
+                </button>
+
+            </form>
+
+            <p>
+                Already have an account?
+                <a href="/login">
+                    Login
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+```

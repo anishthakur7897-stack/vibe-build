@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0">
+
+    <title>Upload Product</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static',
+    filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <h2>🧵 NE Craftsroots</h2>
+
+        <a href="/seller">
+            Dashboard
+        </a>
+
+        <a href="/upload-product">
+            Upload Product
+        </a>
+
+        <a href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main-content">
+
+        <div class="upload-container">
+
+            <div class="upload-box">
+
+                <h1>Upload Product</h1>
+
+                <p>
+                    Add your handmade
+                    handicrafts to the
+                    marketplace.
+                </p>
+
+                <form method="POST"
+                enctype="multipart/form-data">
+
+                    <input
+                    type="text"
+                    name="product_name"
+                    placeholder="Product Name"
+                    required>
+
+                    <textarea
+                    name="description"
+                    placeholder="Description"
+                    required>
+                    </textarea>
+
+                    <input
+                    type="number"
+                    name="price"
+                    placeholder="Price"
+                    required>
+
+                    <select
+                    name="category"
+                    required>
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option>
+                            Bamboo Crafts
+                        </option>
+
+                        <option>
+                            Tribal Textiles
+                        </option>
+
+                        <option>
+                            Jewelry
+                        </option>
+
+                        <option>
+                            Cane Furniture
+                        </option>
+
+                    </select>
+
+                    <label>
+                        Upload Product Image
+                    </label>
+
+                    <input
+                    type="file"
+                    name="image"
+                    required>
+
+                    <button type="submit">
+                        Upload Product
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

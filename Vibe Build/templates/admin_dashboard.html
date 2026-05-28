@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <div class="sidebar">
+        <h2>🧵 Handloom Hub</h2>
+
+        <a href="#">Dashboard</a>
+        <a href="#">Manage Sellers</a>
+        <a href="#">Orders</a>
+        <a href="#">Analytics</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Welcome Admin</h1>
+
+        <div class="dashboard-cards">
+
+            <div class="dash-card">
+                <h2>150</h2>
+                <p>Total Users</p>
+            </div>
+
+            <div class="dash-card">
+                <h2>40</h2>
+                <p>Sellers</p>
+            </div>
+
+            <div class="dash-card">
+                <h2>300</h2>
+                <p>Orders</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
