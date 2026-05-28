@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buyer Dashboard</title>
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <div class="sidebar">
+    <h2>🧵 Buyer Panel</h2>
+
+    <a href="#">Dashboard</a>
+
+    <a href="/products">
+        Browse Products
+    </a>
+
+    <a href="#">
+        Cart
+    </a>
+
+    <a href="#">
+        Orders
+    </a>
+
+    <a href="/logout">
+        Logout
+    </a>
+</div>
+    <div class="main-content">
+        <h1>Welcome Buyer</h1>
+
+        <div class="dashboard-cards">
+
+            <div class="dash-card">
+                <h2>12</h2>
+                <p>Orders</p>
+            </div>
+
+            <div class="dash-card">
+                <h2>5</h2>
+                <p>Wishlist</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <h1 class="logo">🧵 Admin Panel</h1>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Marketplace</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+</header>
+
+
+<section class="admin-page">
+
+    <h1 class="admin-title">Admin Dashboard</h1>
+
+    <p class="admin-subtitle">
+        Manage users, products and platform activity
+    </p>
+
+
+    <div class="admin-grid">
+
+        <div class="admin-card">
+            <h2>👥 Users</h2>
+            <p>View all buyers and sellers</p>
+            <button>Manage Users</button>
+        </div>
+
+        <div class="admin-card">
+            <h2>🛍 Products</h2>
+            <p>Check all uploaded products</p>
+            <button>View Products</button>
+        </div>
+
+        <div class="admin-card">
+            <h2>⚙ Settings</h2>
+            <p>Platform configuration</p>
+            <button>Open Settings</button>
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+</html>

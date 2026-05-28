@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Dashboard</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static',
+    filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <h2>🧵 NE Craftsroots</h2>
+
+        <a href="/seller">
+            Dashboard
+        </a>
+
+        <a href="/upload-product">
+            Upload Product
+        </a>
+
+        <a href="/products">
+            View Products
+        </a>
+
+        <a href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+
+    <div class="main-content">
+
+        <div class="dashboard-header">
+
+            <h1>
+                Welcome,
+                {{ username }}
+            </h1>
+
+            <a href="/upload-product"
+            class="btn">
+                + Upload Product
+            </a>
+
+        </div>
+
+
+        <!-- STATS -->
+
+        <div class="dashboard-cards">
+
+            <div class="dash-card">
+                <h2>📦</h2>
+                <h3>Your Products</h3>
+                <p>Manage uploads</p>
+            </div>
+
+            <div class="dash-card">
+                <h2>🛍️</h2>
+                <h3>Orders</h3>
+                <p>Coming soon</p>
+            </div>
+
+            <div class="dash-card">
+                <h2>💰</h2>
+                <h3>Revenue</h3>
+                <p>Coming soon</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

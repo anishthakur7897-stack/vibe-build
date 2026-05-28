@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>Marketplace | NE Craftsroots</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+
+    <h1 class="logo">🧵 NE Craftsroots</h1>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Marketplace</a>
+        <a href="/seller">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+</header>
+
+
+<!-- PAGE HEADER -->
+<section class="products-page">
+
+    <div class="page-title">
+
+        <h1>Explore Marketplace</h1>
+
+        <p>
+            Discover authentic tribal handicrafts handmade by artisans of Northeast India.
+        </p>
+
+    </div>
+
+
+    <!-- PRODUCTS GRID -->
+    <div class="product-grid">
+
+        {% if products %}
+
+            {% for product in products %}
+
+            <div class="product-card">
+
+                <!-- PRODUCT IMAGE -->
+                <div class="product-image">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product[6]) }}"
+                    alt="Product Image">
+
+                    <span class="badge">
+                        {{ product[5] }}
+                    </span>
+
+                </div>
+
+
+                <!-- PRODUCT INFO -->
+                <div class="product-content">
+
+                    <h2 class="product-title">
+                        {{ product[2] }}
+                    </h2>
+
+                    <p class="product-desc">
+                        {{ product[3] }}
+                    </p>
+
+
+                    <div class="price-row">
+
+                        <h3 class="price">
+                            ₹{{ product[4] }}
+                        </h3>
+
+                        <button class="buy-btn">
+                            Buy Now
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <!-- EMPTY STATE -->
+            <div class="empty-products">
+
+                <h2>🧺 No Products Yet</h2>
+
+                <p>
+                    Sellers haven't uploaded any handicrafts yet.
+                </p>
+
+                <a href="/seller" class="btn">
+                    Become a Seller
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+</body>
+</html>
