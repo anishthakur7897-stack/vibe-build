@@ -1,0 +1,255 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NE Craftsroots</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<header class="navbar">
+
+    <div class="logo">
+        🧵 NE Craftsroots
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Marketplace</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    </nav>
+
+</header>
+
+
+<!-- HERO SECTION -->
+
+<section class="hero">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <div class="hero-left">
+
+            <span class="tagline">
+                Authentic Northeast Handicrafts
+            </span>
+
+            <h1>
+                Discover Handcrafted Heritage
+                of Northeast India
+            </h1>
+
+            <p>
+                Explore authentic tribal textiles,
+                bamboo crafts, jewelry, and handmade
+                cultural treasures directly from
+                artisans of Northeast India.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="/products" class="btn">
+                    Explore Marketplace
+                </a>
+
+                <a href="/register" class="btn-secondary">
+                    Become a Seller
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACCESS PANEL -->
+
+        <div class="login-panel">
+
+            <h2>Quick Access</h2>
+
+            <p>
+                Login as Buyer, Seller or Admin
+            </p>
+
+            <a href="/login" class="panel-btn">
+                Login
+            </a>
+
+            <a href="/register" class="panel-btn register">
+                Register
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CATEGORIES -->
+
+<section class="categories">
+
+    <h2>Popular Categories</h2>
+
+    <div class="category-grid">
+
+        <div class="card">
+            <div class="emoji">🎋</div>
+            <h3>Bamboo Crafts</h3>
+            <p>Eco-friendly tribal bamboo products</p>
+        </div>
+
+        <div class="card">
+            <div class="emoji">🧶</div>
+            <h3>Tribal Textiles</h3>
+            <p>Authentic handmade woven fabrics</p>
+        </div>
+
+        <div class="card">
+            <div class="emoji">💍</div>
+            <h3>Jewelry</h3>
+            <p>Traditional tribal accessories</p>
+        </div>
+
+        <div class="card">
+            <div class="emoji">🪑</div>
+            <h3>Cane Furniture</h3>
+            <p>Beautiful handcrafted furniture</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- NAGALAND TRIBES -->
+
+<section class="tribes">
+
+    <h2>Nagaland Tribal Handicrafts</h2>
+
+    <p>
+        Explore unique traditions and handcrafted
+        heritage from tribes of Nagaland.
+    </p>
+
+    <div class="tribe-grid">
+
+        <div class="tribe-card">
+           <img src="{{ url_for('static',
+                        filename='images/konyak.jpg') }}">
+
+            <h3>Konyak Tribe</h3>
+
+            <p>
+                Warrior art, wood carvings,
+                tribal jewelry
+            </p>
+        </div>
+
+
+        <div class="tribe-card">
+            <img src="https://images.unsplash.com/photo-1604147706285-4d8a1a4c9b1a">
+
+            <h3>Ao Tribe</h3>
+
+            <p>
+                Traditional shawls,
+                bamboo handicrafts
+            </p>
+        </div>
+
+
+        <div class="tribe-card">
+            <img src="https://images.unsplash.com/photo-1616628188859-7b9f2d6f3c9b">
+
+            <h3>Angami Tribe</h3>
+
+            <p>
+                Textiles, weaving,
+                pottery crafts
+            </p>
+        </div>
+
+
+        <div class="tribe-card">
+            <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4f8a">
+
+            <h3>Sumi Tribe</h3>
+
+            <p>
+                Basket weaving,
+                handmade fabrics
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- WHY CHOOSE -->
+
+<section class="why">
+
+    <h2>Why NE Craftsroots?</h2>
+
+    <div class="why-grid">
+
+        <div class="why-card">
+            🌿
+            <h3>Authentic Products</h3>
+            <p>
+                Directly sourced from
+                tribal artisans
+            </p>
+        </div>
+
+        <div class="why-card">
+            🤝
+            <h3>Support Local Artisans</h3>
+            <p>
+                Empower Northeast communities
+            </p>
+        </div>
+
+        <div class="why-card">
+            🚚
+            <h3>Delivery Tracking</h3>
+            <p>
+                Easily track your orders
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+    <h3>🧵 NE Craftsroots</h3>
+
+    <p>
+        Preserving Northeast India’s
+        handcrafted heritage.
+    </p>
+
+</footer>
+
+</body>
+</html>
+```

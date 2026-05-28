@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
 import os
-
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -55,9 +54,7 @@ def home():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
     if request.method == "POST":
-
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
@@ -80,7 +77,7 @@ def register():
             flash("Registration Successful!", "success")
             return redirect("/login")
 
-        except sqlite3.IntegrityError:
+        except:
             flash("Email already exists!", "danger")
             return redirect("/register")
 
@@ -91,9 +88,7 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
     if request.method == "POST":
-
         email = request.form["email"]
         password = request.form["password"]
 
@@ -105,7 +100,6 @@ def login():
         conn.close()
 
         if user and check_password_hash(user[3], password):
-
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["role"] = user[4]
@@ -117,7 +111,7 @@ def login():
             else:
                 return redirect("/buyer")
 
-        flash("Invalid Email or Password", "danger")
+        flash("Invalid credentials", "danger")
 
     return render_template("login.html")
 
@@ -125,23 +119,17 @@ def login():
 # ---------------- ADMIN ---------------- #
 
 @app.route("/admin")
-def admin_dashboard():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
+def admin():
     if session.get("role") != "admin":
-        flash("Access denied", "danger")
         return redirect("/login")
 
-    return render_template("admin_dashboard.html", username=session.get("username"))
+    return render_template("admin_dashboard.html", username=session["username"])
 
 
 # ---------------- SELLER ---------------- #
 
 @app.route("/seller")
-def seller_dashboard():
-
+def seller():
     if session.get("role") != "seller":
         return redirect("/login")
 
@@ -151,8 +139,7 @@ def seller_dashboard():
 # ---------------- BUYER ---------------- #
 
 @app.route("/buyer")
-def buyer_dashboard():
-
+def buyer():
     if session.get("role") != "buyer":
         return redirect("/login")
 
@@ -163,12 +150,10 @@ def buyer_dashboard():
 
 @app.route("/upload-product", methods=["GET", "POST"])
 def upload_product():
-
     if session.get("role") != "seller":
         return redirect("/login")
 
     if request.method == "POST":
-
         product_name = request.form["product_name"]
         description = request.form["description"]
         price = request.form["price"]
@@ -183,15 +168,14 @@ def upload_product():
         c = conn.cursor()
 
         c.execute("""
-            INSERT INTO products
-            (seller_name, product_name, description, price, category, image)
+            INSERT INTO products (seller_name, product_name, description, price, category, image)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (session["username"], product_name, description, price, category, filename))
 
         conn.commit()
         conn.close()
 
-        flash("Product Uploaded!", "success")
+        flash("Product uploaded!", "success")
         return redirect("/seller")
 
     return render_template("upload_product.html")
@@ -201,7 +185,6 @@ def upload_product():
 
 @app.route("/products")
 def products():
-
     search = request.args.get("search")
 
     conn = sqlite3.connect("database.db")
@@ -212,7 +195,7 @@ def products():
         c.execute("""
             SELECT * FROM products
             WHERE product_name LIKE ? OR category LIKE ?
-        """, ('%' + search + '%', '%' + search + '%'))
+        """, (f"%{search}%", f"%{search}%"))
     else:
         c.execute("SELECT * FROM products")
 
@@ -240,10 +223,9 @@ def add_to_cart(product_id):
 @app.route("/cart")
 def cart():
 
-    cart_items = []
+    items = []
 
-    if "cart" in session and session["cart"]:
-
+    if "cart" in session:
         conn = sqlite3.connect("database.db")
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
@@ -251,34 +233,13 @@ def cart():
         placeholders = ",".join("?" * len(session["cart"]))
 
         c.execute(f"""
-            SELECT * FROM products
-            WHERE id IN ({placeholders})
+            SELECT * FROM products WHERE id IN ({placeholders})
         """, session["cart"])
 
-        cart_items = c.fetchall()
+        items = c.fetchall()
         conn.close()
 
-    return render_template("cart.html", products=cart_items)
-
-
-# ---------------- MY PRODUCTS ---------------- #
-
-@app.route("/my-products")
-def my_products():
-
-    if session.get("role") != "seller":
-        return redirect("/login")
-
-    conn = sqlite3.connect("database.db")
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM products WHERE seller_name=?", (session["username"],))
-    items = c.fetchall()
-
-    conn.close()
-
-    return render_template("my_products.html", products=items)
+    return render_template("cart.html", products=items)
 
 
 # ---------------- LOGOUT ---------------- #
@@ -286,13 +247,7 @@ def my_products():
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Logged out!", "info")
     return redirect("/")
-
-
-@app.route("/test")
-def test():
-    return "Flask is working!"
 
 
 # ---------------- RUN ---------------- #

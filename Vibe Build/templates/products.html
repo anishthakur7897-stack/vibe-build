@@ -1,0 +1,122 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0">
+
+    <title>Marketplace | NE Craftsroots</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static',
+    filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <h1 class="logo">
+        🧵 NE Craftsroots
+    </h1>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Marketplace</a>
+        <a href="/seller">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+</header>
+
+
+<section class="products-page">
+
+    <div class="page-title">
+
+        <h1>
+            Explore Marketplace
+        </h1>
+
+        <p>
+            Discover authentic tribal
+            handicrafts handmade by
+            artisans of Northeast India.
+        </p>
+
+    </div>
+
+
+    <div class="product-grid">
+
+        {% if products %}
+
+            {% for product in products %}
+
+            <div class="product-card">
+
+                <img src="{{ url_for(
+                'static',
+                filename='uploads/' + product[6]
+                ) }}"
+                alt="Product Image">
+
+                <div class="product-content">
+
+                    <span class="category-tag">
+                        {{ product[5] }}
+                    </span>
+
+                    <h2>
+                        {{ product[2] }}
+                    </h2>
+
+                    <p>
+                        {{ product[3] }}
+                    </p>
+
+                    <div class="price-row">
+
+                        <h3>
+                            ₹{{ product[4] }}
+                        </h3>
+
+                        <button>
+                            Buy Now
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-products">
+
+                <h2>
+                    No Products Yet
+                </h2>
+
+                <p>
+                    Sellers haven't uploaded
+                    any handicrafts yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+</body>
+</html>
+```
