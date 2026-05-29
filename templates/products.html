@@ -2,21 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Marketplace | NE Craftsroots</title>
 
-    <link rel="stylesheet"
-    href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <header class="navbar">
-
     <h1 class="logo">🧵 NE Craftsroots</h1>
 
     <nav>
@@ -25,35 +20,25 @@
         <a href="/seller">Dashboard</a>
         <a href="/logout">Logout</a>
     </nav>
-
 </header>
 
-<!-- PAGE CONTENT -->
 <section class="products-page">
 
     <div class="page-title">
-
         <h1>Explore Marketplace</h1>
-
-        <p>
-            Discover authentic tribal handicrafts handmade by artisans of Northeast India.
-        </p>
-
+        <p>Discover authentic tribal handicrafts handmade by artisans of Northeast India.</p>
     </div>
 
     <!-- SEARCH BAR -->
     <form method="GET" action="/products" class="search-bar">
-
         <input type="text"
                name="search"
                placeholder="Search products..."
                value="{{ search if search else '' }}">
 
         <button type="submit">Search</button>
-
     </form>
 
-    <!-- PRODUCTS GRID -->
     <div class="product-grid">
 
         {% if products %}
@@ -62,46 +47,47 @@
 
             <div class="product-card">
 
-                <!-- IMAGE -->
                 <div class="product-image">
 
-                    <img src="{{ url_for('static', filename='uploads/' + product['image']) }}"
-                    alt="Product Image">
+                    {% if product[6] %}
+                        <img src="{{ url_for('static', filename='uploads/' + product[6]) }}"
+                             alt="Product Image">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default.jpg') }}"
+                             alt="No Image">
+                    {% endif %}
 
                     <span class="badge">
-                        {{ product['category'] }}
+                        {{ product[5] }}
                     </span>
 
                 </div>
 
-                <!-- CONTENT -->
                 <div class="product-content">
 
                     <h2 class="product-title">
-                        {{ product['product_name'] }}
+                        {{ product[2] }}
                     </h2>
 
                     <p class="product-desc">
-                        {{ product['description'] }}
+                        {{ product[3] }}
                     </p>
 
                     <div class="price-row">
 
                         <h3 class="price">
-                            ₹{{ product['price'] }}
+                            ₹{{ product[4] }}
                         </h3>
 
                         <div style="display:flex; gap:10px;">
 
-                            <!-- ADD TO CART -->
-                            <a href="/add-to-cart/{{ product['id'] }}">
-                                <button class="buy-btn">
+                            <a href="/add-to-cart/{{ product[0] }}">
+                                <button class="buy-btn" type="button">
                                     Add to Cart
                                 </button>
                             </a>
 
-                            <!-- BUY NOW (optional) -->
-                            <button class="buy-btn">
+                            <button class="buy-btn" type="button">
                                 Buy Now
                             </button>
 
@@ -117,19 +103,13 @@
 
         {% else %}
 
-            <!-- EMPTY STATE -->
             <div class="empty-products">
-
                 <h2>🧺 No Products Yet</h2>
-
-                <p>
-                    Sellers haven't uploaded any handicrafts yet.
-                </p>
+                <p>Sellers haven't uploaded any handicrafts yet.</p>
 
                 <a href="/seller" class="btn">
                     Become a Seller
                 </a>
-
             </div>
 
         {% endif %}
