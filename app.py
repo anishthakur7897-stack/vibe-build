@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# ================= PRODUCTION FIX =================
+# ================= PRODUCTION CONFIG =================
 app.secret_key = os.environ.get("SECRET_KEY", "change_this_secret_key")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,8 +18,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-# ---------------- DATABASE ---------------- #
-
+# ================= DATABASE =================
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -50,15 +49,13 @@ def init_db():
     conn.close()
 
 
-# ---------------- HOME ---------------- #
-
+# ================= HOME =================
 @app.route("/")
 def home():
     return render_template("home.html")
 
 
-# ---------------- REGISTER ---------------- #
-
+# ================= REGISTER =================
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -84,15 +81,14 @@ def register():
             flash("Registration Successful!", "success")
             return redirect("/login")
 
-        except:
+        except sqlite3.IntegrityError:
             flash("Email already exists!", "danger")
             return redirect("/register")
 
     return render_template("register.html")
 
 
-# ---------------- LOGIN FIXED ---------------- #
-
+# ================= LOGIN (FIXED) =================
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -128,41 +124,37 @@ def login():
     return render_template("login.html")
 
 
-# ---------------- ADMIN ---------------- #
-
+# ================= ADMIN =================
 @app.route("/admin")
 def admin():
     if session.get("role") != "admin":
         return redirect("/login")
 
     return render_template("admin_dashboard.html",
-                           username=session.get("username"))
+                           username=session.get("username", "Admin"))
 
 
-# ---------------- SELLER ---------------- #
-
+# ================= SELLER =================
 @app.route("/seller")
 def seller():
     if session.get("role") != "seller":
         return redirect("/login")
 
     return render_template("seller_dashboard.html",
-                           username=session.get("username"))
+                           username=session.get("username", "Seller"))
 
 
-# ---------------- BUYER ---------------- #
-
+# ================= BUYER =================
 @app.route("/buyer")
 def buyer():
     if session.get("role") != "buyer":
         return redirect("/login")
 
     return render_template("buyer_dashboard.html",
-                           username=session.get("username"))
+                           username=session.get("username", "Buyer"))
 
 
-# ---------------- UPLOAD ---------------- #
-
+# ================= UPLOAD PRODUCT =================
 @app.route("/upload-product", methods=["GET", "POST"])
 def upload_product():
     if session.get("role") != "seller":
@@ -198,34 +190,39 @@ def upload_product():
     return render_template("upload_product.html")
 
 
-# ---------------- PRODUCTS ---------------- #
-
+# ================= PRODUCTS (FIXED SAFE) =================
 @app.route("/products")
 def products():
-    search = request.args.get("search")
+    search = request.args.get("search", "")
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    if search:
-        c.execute("""
-            SELECT * FROM products
-            WHERE product_name LIKE ? OR category LIKE ?
-        """, (f"%{search}%", f"%{search}%"))
-    else:
-        c.execute("SELECT * FROM products")
+    try:
+        if search:
+            c.execute("""
+                SELECT * FROM products
+                WHERE product_name LIKE ? OR category LIKE ?
+            """, (f"%{search}%", f"%{search}%"))
+        else:
+            c.execute("SELECT * FROM products")
 
-    products = c.fetchall()
-    conn.close()
+        products = c.fetchall()
+
+    except Exception as e:
+        print("PRODUCT ERROR:", e)
+        products = []
+
+    finally:
+        conn.close()
 
     return render_template("products.html",
                            products=products,
                            search=search)
 
 
-# ---------------- CART ---------------- #
-
+# ================= CART (FIXED) =================
 @app.route("/add-to-cart/<int:product_id>")
 def add_to_cart(product_id):
 
@@ -263,16 +260,14 @@ def cart():
     return render_template("cart.html", products=items)
 
 
-# ---------------- LOGOUT ---------------- #
-
+# ================= LOGOUT =================
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
 
-# ---------------- RUN (RENDER FIX) ---------------- #
-
+# ================= START =================
 if __name__ == "__main__":
     init_db()
     app.run(host="0.0.0.0", port=10000)
