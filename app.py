@@ -5,16 +5,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = "handloom_secret_key"
 
-UPLOAD_FOLDER = "static/uploads"
+# ================= PRODUCTION FIX =================
+app.secret_key = os.environ.get("SECRET_KEY", "change_this_secret_key")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static/uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # ---------------- DATABASE ---------------- #
 
 def init_db():
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
     c.execute("""
@@ -63,7 +70,7 @@ def register():
         hashed_password = generate_password_hash(password)
 
         try:
-            conn = sqlite3.connect("database.db")
+            conn = sqlite3.connect(DB_PATH)
             c = conn.cursor()
 
             c.execute("""
@@ -84,15 +91,16 @@ def register():
     return render_template("register.html")
 
 
-# ---------------- LOGIN ---------------- #
+# ---------------- LOGIN FIXED ---------------- #
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+
         email = request.form["email"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
 
         c.execute("SELECT * FROM users WHERE email=?", (email,))
@@ -100,9 +108,13 @@ def login():
         conn.close()
 
         if user and check_password_hash(user[3], password):
+
+            session.clear()
+
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["role"] = user[4]
+            session["cart"] = []
 
             if user[4] == "admin":
                 return redirect("/admin")
@@ -123,7 +135,8 @@ def admin():
     if session.get("role") != "admin":
         return redirect("/login")
 
-    return render_template("admin_dashboard.html", username=session["username"])
+    return render_template("admin_dashboard.html",
+                           username=session.get("username"))
 
 
 # ---------------- SELLER ---------------- #
@@ -133,7 +146,8 @@ def seller():
     if session.get("role") != "seller":
         return redirect("/login")
 
-    return render_template("seller_dashboard.html", username=session["username"])
+    return render_template("seller_dashboard.html",
+                           username=session.get("username"))
 
 
 # ---------------- BUYER ---------------- #
@@ -143,10 +157,11 @@ def buyer():
     if session.get("role") != "buyer":
         return redirect("/login")
 
-    return render_template("buyer_dashboard.html", username=session["username"])
+    return render_template("buyer_dashboard.html",
+                           username=session.get("username"))
 
 
-# ---------------- UPLOAD PRODUCT ---------------- #
+# ---------------- UPLOAD ---------------- #
 
 @app.route("/upload-product", methods=["GET", "POST"])
 def upload_product():
@@ -154,6 +169,7 @@ def upload_product():
         return redirect("/login")
 
     if request.method == "POST":
+
         product_name = request.form["product_name"]
         description = request.form["description"]
         price = request.form["price"]
@@ -164,11 +180,12 @@ def upload_product():
 
         image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        conn = sqlite3.connect("database.db")
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
 
         c.execute("""
-            INSERT INTO products (seller_name, product_name, description, price, category, image)
+            INSERT INTO products
+            (seller_name, product_name, description, price, category, image)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (session["username"], product_name, description, price, category, filename))
 
@@ -187,7 +204,7 @@ def upload_product():
 def products():
     search = request.args.get("search")
 
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
@@ -202,7 +219,9 @@ def products():
     products = c.fetchall()
     conn.close()
 
-    return render_template("products.html", products=products, search=search)
+    return render_template("products.html",
+                           products=products,
+                           search=search)
 
 
 # ---------------- CART ---------------- #
@@ -213,7 +232,9 @@ def add_to_cart(product_id):
     if "cart" not in session:
         session["cart"] = []
 
-    session["cart"].append(product_id)
+    if product_id not in session["cart"]:
+        session["cart"].append(product_id)
+
     session.modified = True
 
     flash("Added to cart!", "success")
@@ -225,8 +246,8 @@ def cart():
 
     items = []
 
-    if "cart" in session:
-        conn = sqlite3.connect("database.db")
+    if session.get("cart"):
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
@@ -250,8 +271,8 @@ def logout():
     return redirect("/")
 
 
-# ---------------- RUN ---------------- #
+# ---------------- RUN (RENDER FIX) ---------------- #
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
